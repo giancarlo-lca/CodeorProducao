@@ -103,7 +103,7 @@
 
 # Environments
 *.sqlite3
-.env
+env
 .venv
 env/
 venv/
