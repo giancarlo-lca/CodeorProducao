@@ -78,6 +78,7 @@ class Celula(models.Model):
                                                                        .replace("(","").replace(")","")) 
             obj.save()
             
+            # print(obj.id)
             return obj.id
         except:
             self.acao = acao
