@@ -1,3 +1,8 @@
+import logging
+logging.basicConfig(filename='celulas_log.log', level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+logger=logging.getLogger(__name__)
+
 from django.db import models
 
 import decimal
@@ -57,6 +62,10 @@ class Celula(models.Model):
                 total+= decimal.Decimal(planejamento.valor)
 
         return total
+    
+    def formatToDecimal(valor):
+        return 0 if valor == '' else decimal.Decimal(valor.replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
 
     def find_and_save(self, item, acao, fonte, natureza, pi, plano, ptres, ugex, ugresp):
         try:
@@ -64,23 +73,20 @@ class Celula(models.Model):
                                          plano=plano, ptres=ptres, ugex=ugex, ugresp=ugresp)
             #print(obj)
 
-            obj.dotacao = 0 if item.get('dotacao') == '' else decimal.Decimal(item.get('dotacao')
-                                                              .replace(".", "").replace(",",".")
-                                                              .replace("(","").replace(")",""))
-            obj.credito = 0 if item.get('credito') == '' else decimal.Decimal(item.get('credito')
-                                                              .replace(".", "").replace(",",".")
-                                                              .replace("(","").replace(")",""))
-            obj.despesasEmp = 0 if item.get('desp_emp') == '' else decimal.Decimal(item.get('desp_emp')
-                                                                   .replace(".", "").replace(",",".")
-                                                                   .replace("(","").replace(")",""))
-            obj.despesasPagas = 0 if item.get('desp_pagas') == '' else decimal.Decimal(item.get('desp_pagas')
-                                                                       .replace(".", "").replace(",",".")
-                                                                       .replace("(","").replace(")","")) 
+            obj.dotacao = 0 if item.get('dotacao') == '' else decimal.Decimal(item.get('dotacao').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
+            obj.credito = 0 if item.get('credito') == '' else decimal.Decimal(item.get('credito').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
+            obj.despesasEmp = 0 if item.get('desp_emp') == '' else decimal.Decimal(item.get('desp_emp').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
+            obj.despesasPagas = 0 if item.get('desp_pagas') == '' else decimal.Decimal(item.get('desp_pagas').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
             obj.save()
             
-            # print(obj.id)
             return obj.id
-        except:
+        except Exception as err:
+            logger.error(err)
+            # logging.info('Não encontrou e vai criar uma celula ' + str(err))
             self.acao = acao
             self.plano = plano
             self.ptres = ptres
@@ -90,10 +96,14 @@ class Celula(models.Model):
             self.fonte = fonte
             self.natureza = natureza
 
-            self.dotacao = 0 if item.get('dotacao') == '' else decimal.Decimal(item.get('dotacao').replace(".", "").replace(",",".").replace("(","").replace(")",""))
-            self.credito = 0 if item.get('credito') == '' else decimal.Decimal(item.get('credito').replace(".", "").replace(",",".").replace("(","").replace(")",""))
-            self.despesasEmp = 0 if item.get('desp_emp') == '' else decimal.Decimal(item.get('desp_emp').replace(".", "").replace(",",".").replace("(","").replace(")",""))
-            self.despesasPagas = 0 if item.get('desp_pagas') == '' else decimal.Decimal(item.get('desp_pagas').replace(".", "").replace(",",".").replace("(","").replace(")",""))
+            self.dotacao = 0 if item.get('dotacao') == '' else decimal.Decimal(item.get('dotacao').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
+            self.credito = 0 if item.get('credito') == '' else decimal.Decimal(item.get('credito').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
+            self.despesasEmp = 0 if item.get('desp_emp') == '' else decimal.Decimal(item.get('desp_emp').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
+            self.despesasPagas = 0 if item.get('desp_pagas') == '' else decimal.Decimal(item.get('desp_pagas').replace(".", "").replace(",",".")
+                                                          .replace("(","").replace(")",""))
             #self.description = desc
             self.save()
             return self

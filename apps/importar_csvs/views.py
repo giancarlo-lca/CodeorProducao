@@ -1,3 +1,7 @@
+import logging
+
+logging.basicConfig(filename='importar_csvs_log.log', level=logging.DEBUG)
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -32,16 +36,18 @@ def upload_file_view(request):
     if form.is_valid():
         # abra o arquivo
         try:
+            logging.debug('lendo o arquivo')
             arquivo = io.TextIOWrapper(request.FILES['arquivo'])
             #print(nomeArquivo)
             # let's check if it is a csv file
             if not arquivo.name.endswith('.csv'):
                 messages.error(request, 'Não é um arquivo CSV')
-            
+                return render(request, 'upload.html',{'form': form})
         
         # file = myfile.read().decode('utf-8-sig')
         # reader = csv.DictReader(io.StringIO(file), delimiter=';')
         # data = [line for line in reader]
+            logging.debug('lendo o arquivo - csv_to_list')
             data = csv_to_list(arquivo)
             #print(data)
             #i = 1
@@ -49,12 +55,14 @@ def upload_file_view(request):
             
         # dd/mm/YY H:M:S
             dt_string = now.strftime("%H:%M:%S")
+            logging.debug('registrando o tempo inicial '+dt_string)
             # print("date and time =", dt_string)
-            
+            logging.debug('lendo cada linha do arquivo - for item in data:')
             for item in data:
                 #print(i)
                 #i+=1
                 #acao = AcaoGoverno()
+                logging.debug(item.get('codgov'))
                 acao = AcaoGoverno().find_and_save(item.get('codgov'), item.get('acaogov'))
             # print(acao)
                 plano = Orcamento().find_and_save(item.get('codplano'), item.get('plano'))
@@ -69,13 +77,17 @@ def upload_file_view(request):
             
             now = datetime.now()
             dt_string = now.strftime("%H:%M:%S")
+
+            logging.debug('registrando o tempo final '+dt_string)
             # print("date and time =", dt_string)
             # Percorrer o arquivo
             
             # Para cada linha chama um método find_and_save (Da classe base) passando parametros conheciados
             messages.success(request, 'Arquivo importado com sucesso.') 
             return render(request, 'upload.html',{'form': form})
-        except:
+        
+        except Warning as e:
+            logging.debug('Error occurred ' + str(e))
             messages.error(request, 'Erro ao importar arquivo') 
             form = CsvModelForm()
             return render(request, 'upload.html', {'form': form})
