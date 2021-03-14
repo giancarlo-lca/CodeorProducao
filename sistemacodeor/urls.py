@@ -20,7 +20,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', include('apps.core.urls')),
-    path('importar/csv', include('apps.importar_csvs.urls')),
+    path('importar/', include('apps.importar_csvs.urls')),
     path('celulas/', include('apps.celulas.urls')),
     path('celulas/<int:pi_id>/planejamentos/', include('apps.planejamento.urls')),
     path('itens/planejados/', include('apps.planejamento.urls')),

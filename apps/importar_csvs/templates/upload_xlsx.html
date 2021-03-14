@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block menu %}
+    {% include 'menu.html' %}
+{% endblock %}
+
+{% block content %}
+    
+    <div class="csv">
+        {% include 'pageTitle.html' with icon="fa fa-download" titulo="Importar dados" subtitulo="Importar dados de arquivo XLS" %}
+        
+
+        <div class="importar_csv">
+
+            {% if messages %}
+                {% for m in messages %}
+                    {% if  m.tags != 'error' %}
+                        <div class="alert alert-{{ m.tags }}" role="alert">
+                            {{ m }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ m }}
+                        </div>
+                    {% endif %}
+                {% endfor %}   
+            {% endif %}
+
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token  %}
+                {{form}}
+                <button type="submit" class="btn btn-primary">Processar</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+

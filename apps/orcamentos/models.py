@@ -10,6 +10,7 @@ class Orcamento(Base):
 
     class Meta:
         db_table = 'orcamentos'
+        managed = False
 
     def find_and_save(self, codigo, descricao):
         try:

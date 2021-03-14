@@ -8,6 +8,12 @@ class Csv(models.Model):
     class Meta:
         managed = False
 
+class Xls(models.Model):
+    arquivo = models.FileField(upload_to='xlsx')
+
+    class Meta:
+        managed = False
+
 
 def csv_to_list(filename: str) -> list:
     """Receive an csv filename and returns rows of file with an list"""

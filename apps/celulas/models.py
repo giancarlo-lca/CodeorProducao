@@ -67,7 +67,7 @@ class Celula(models.Model):
         return 0 if valor == '' else decimal.Decimal(valor.replace(".", "").replace(",",".")
                                                           .replace("(","").replace(")",""))
 
-    def find_and_save(self, item, acao, fonte, natureza, pi, plano, ptres, ugex, ugresp):
+    def find_and_save_csv(self, item, acao, fonte, natureza, pi, plano, ptres, ugex, ugresp):
         try:
             obj = __class__.objects.get(acao=acao, fonte=fonte, natureza=natureza, pi=pi,
                                          plano=plano, ptres=ptres, ugex=ugex, ugresp=ugresp)
@@ -104,6 +104,44 @@ class Celula(models.Model):
                                                           .replace("(","").replace(")",""))
             self.despesasPagas = 0 if item.get('desp_pagas') == '' else decimal.Decimal(item.get('desp_pagas').replace(".", "").replace(",",".")
                                                           .replace("(","").replace(")",""))
+            #self.description = desc
+            self.save()
+            return self
+
+    def find_and_save_xls(self, item, acao, fonte, natureza, pi, plano, ptres, ugex, ugresp):
+        try:
+            obj = __class__.objects.get(acao=acao, fonte=fonte, natureza=natureza, pi=pi,
+                                         plano=plano, ptres=ptres, ugex=ugex, ugresp=ugresp)
+            #print(obj)
+
+            obj.dotacao = 0 if item['dotacao'] == '' else "{:.2f}".format(item['dotacao'])
+            obj.credito = 0 if item['credito'] == '' else "{:.2f}".format(item['credito'])
+            obj.despesasEmp = 0 if item['despEmp'] == '' else "{:.2f}".format(item['despEmp'])
+            obj.despesasPagas = 0 if item['despPagas'] == '' else "{:.2f}".format(item['despPagas'])
+
+            obj.save()
+            return obj.id
+     
+        except Exception as err:
+            logger.error(err)
+            # logging.info('Não encontrou e vai criar uma celula ' + str(err))
+            self.acao = acao
+            self.plano = plano
+            self.ptres = ptres
+            self.ugresp = ugresp
+            self.ugex = ugex
+            self.pi = pi
+            self.fonte = fonte
+            self.natureza = natureza
+
+            self.dotacao = 0 if item['dotacao'] == '' else "{:.2f}".format(item['dotacao'])
+            # print(self.dotacao)
+            self.credito = 0 if item['credito'] == '' else "{:.2f}".format(item['credito'])
+            # print(self.credito)  
+            self.despesasEmp = 0 if item['despEmp'] == '' else "{:.2f}".format(item['despEmp'])
+            # print(self.despesasEmp)
+            self.despesasPagas = 0 if item['despPagas'] == '' else "{:.2f}".format(item['despPagas'])
+            # print(self.despesasPagas)
             #self.description = desc
             self.save()
             return self
